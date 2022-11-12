@@ -1,7 +1,10 @@
 package com.bilircode.fraud;
 
+import com.bilircode.clients.fraud.FraudCheckResponse;
+import com.bilircode.clients.fraud.FraudClient;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,8 +16,10 @@ public class FraudCheckController {
     private FraudCheckService fraudCheckService;
 
     @GetMapping(path="{customerId}")
-    public FraudCheckResponse isFraudster(@PathVariable("customerId") Integer customerID){
-        boolean isFraudulentCustomer = fraudCheckService.isFraudulenCustomer(customerID);
+    public FraudCheckResponse isFraudster(
+            @PathVariable("customerId") Integer customerID){
+        boolean isFraudulentCustomer = fraudCheckService.
+                isFraudulenCustomer(customerID);
         log.info("fraud check request for customer {}", customerID);
         return new FraudCheckResponse(isFraudulentCustomer);
     }

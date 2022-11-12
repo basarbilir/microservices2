@@ -1,4 +1,4 @@
-package com.bilircode;
+package com.bilircode.notification;
 
 import com.bilircode.clients.notification.NotificationRequest;
 import lombok.AllArgsConstructor;

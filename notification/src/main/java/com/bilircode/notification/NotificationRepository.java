@@ -1,4 +1,4 @@
-package com.bilircode;
+package com.bilircode.notification;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

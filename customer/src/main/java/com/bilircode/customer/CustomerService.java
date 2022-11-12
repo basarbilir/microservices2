@@ -1,5 +1,6 @@
 package com.bilircode.customer;
 
+import com.bilircode.amqp.RabbitMQMessageProducer;
 import com.bilircode.clients.fraud.FraudCheckResponse;
 import com.bilircode.clients.fraud.FraudClient;
 import com.bilircode.clients.notification.NotificationClient;
@@ -14,9 +15,8 @@ import org.springframework.web.client.RestTemplate;
 public class CustomerService {
 
     private final CustomerRepsitory customerRepsitory;
-    private final NotificationClient notificationClient;
-    private final RestTemplate restTemplate;
     private final FraudClient fraudClient;
+    private final RabbitMQMessageProducer rabbitMQMessageProducer;
     public void registerCustomer(CustomerRegistrationRequest request) {
         Customer customer = Customer.builder()
                 .firstName(request.firstName())
@@ -36,14 +36,16 @@ public class CustomerService {
             throw new IllegalStateException("fraudster");
         }
 
-        // todo: make it async. i.e add to queue
-        notificationClient.sendNotification(
-                new NotificationRequest(
-                        customer.getId(),
-                        customer.getEmail(),
-                        String.format("Hi %s, welcome to Basarcode...",
-                                customer.getFirstName())
-                )
+        NotificationRequest notificationRequest = new NotificationRequest(
+                customer.getId(),
+                customer.getEmail(),
+                String.format("Hi %s, welcome to Basarcode...",
+                        customer.getFirstName())
+        );
+        rabbitMQMessageProducer.publish(
+                notificationRequest,
+                "internal.exchange",
+                "internal.notification.routing-key"
         );
 
     }
